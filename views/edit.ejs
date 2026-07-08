@@ -8,12 +8,10 @@
 </head>
 <body>
     <div class="bg-zinc-900 min-h-screen w-full text-white py-10 px-10">
+        <h5 class="mb-5">Edit your post</h5>
 
-        
-        <h5 class="mb-5">you can update post</h5>
-
-        <form action="/edit" method="get">
-            <textarea placeholder="what's on your mind ?" class=" p-2 w-1/3 resize-none bg-transparent outline-none border-2 border-zinc-800 rounded-md" name="content"></textarea>
+        <form action="/update/<%= post._id%>" method="post">
+            <textarea placeholder="what's on your mind ?" class=" p-2 w-1/3 resize-none bg-transparent outline-none border-2 border-zinc-800 rounded-md" name="content" ><%= post.content%></textarea>
             <input class="p-2 px-4 rounded-md mt-2 bg-yellow-500 block outline-none" type="submit" value="Update Post">
         </form>
 
