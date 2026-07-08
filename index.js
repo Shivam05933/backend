@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const user = require('./models/user');
+const post = require('./models/post');
 
 
 app.set("view engine", "ejs");
@@ -23,19 +24,42 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/profile', isLoggedIn,async (req, res) => {// ye ak protected route hai 
-    let user = await userModel.findOne({email: req.user.email}) // we are chcking here kon sa user login hai usko find kar rahe hai 
+    let user = await userModel.findOne({email: req.user.email}).populate("posts") // we are chcking here kon sa user login hai usko find kar rahe hai 
     res.render("profile", {user});// hamne profile.ejs banaya hai usko open karenge es route pe 
+})
 
+app.get('/like/:id', isLoggedIn, async (req, res) => {
+    let post = await postModel.findOne({_id: req.params.id}).populate("user")// here we have find all the post and populate user field  
+    
+    if(post.likes.indexOf(req.user.userid) === -1){ // post ke likes array me id's hongi agr userid nahi hai matalab -1 to like karva do
+        post.likes.push(req.user.userid)// yaha pe hamne post ke like array me user ki id put kar di hai // basically like karva rahe hai 
+    }
+    else{ // agr user hai to hame like hatana hai  
+        post.likes.splice(post.likes.indexOf(req.user.userid), 1)// post ke likes array me se es index ke bande ko hatao " post.likes.indexOf(req.user.userid) " aur kitne ko hatao 1 ko to 1 like hat jaye ga  
+    }
+
+    await post.save(); // to hamne yaha pe dono hi case me save kiya hai post ka like bade ya gate
+    res.redirect("/profile")
+
+})
+
+app.get('/edit/:id', isLoggedIn, async (req , res)=>{
+    let post = await postModel.findOne({_id: req.params._id}).populate("user")
+
+    res.render("edit")
 })
 
 app.post('/post', isLoggedIn , async (req,res)=>{
     let user = await userModel.findOne({email: req.user.email}); // we are finding user
     let {content} = req.body; // D strcturing
 
-    let post = await postModel.create({
-        user:user._id, // esse pata chale ga post ko ki  user kon hai 
+    let post = await postModel.create({ // post create ho chuka hai
+        user:user._id, // esse pata chale ga post ko ki user kon hai 
         content
     })
+    user.posts.push(post._id);// ab ham user ko bata rahe hai ki usne post create kiya hai / to ham user ke posts me es post ki id push kar rahe hai 
+    await user.save();
+    res.redirect("/profile")
 })
 
 app.post('/register', async (req, res) => {
