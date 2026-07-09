@@ -7,14 +7,47 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const user = require('./models/user');
 const post = require('./models/post');
-
+const crypto = require('crypto')
+const path = require('path')
+const multer = require("multer")
 
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
+const storage = multer.diskStorage({ // es pure content se am log image ko save karvate hai filename ke sath //aur ham log ye diskstorage pe save kar rahe hai 
+    destination: function(req, file, cb){ // destination -> kaha pe image store hone vala hai 
+        cb(null, './public/image/uploads')
+    },
+    filename: function(req, file, cb){ // filename -> file ka name set kar rahe hai 
+        crypto.randomBytes(12, function(err, bytes){ // ye hame randomBytes dega hame 12 set kiya hai 
+            const fn =  bytes.toString("hex") + path.extname(file.originalname) // bytes.toString("hex")=> random name / path.extname(file.originalname)=> .jpg , .jpeg etc file extention gives
+            cb(null, fn)
+        })   
+    }
+})
 
+
+const upload = multer ({ storage:storage });
+
+
+app.get("/test", (req, res)=>{
+    res.render("test")
+})
+
+app.post('/upload', upload.single("image"),  (req,res)=>{
+    console.log(req.file)
+})
+
+
+
+
+
+
+
+
+// ------------------------------------------------
 app.get('/', (req, res) => {
     res.render("index");
 });
