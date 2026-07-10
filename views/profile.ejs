@@ -12,7 +12,9 @@
             <a class="bg-red-400 rounded-md px-3 py-2" href="/logout">logout</a>
         </div>
         <div class="flex gap-3">
-            <div class="bg-red-500 w-10 rounded-md"></div>
+            <div class="bg-red-500 w-10 rounded-md">
+                <img class="w-full h-full object-cover" src="/image/uploads/<%= user.profilepic %>" alt="">
+            </div>
             <h3 class="text-3xl ">hello, <%= user.name %>👋🏻</h3>
         </div>
         <h5 class="mb-5 mt-2">you can create a new post.</h5>
