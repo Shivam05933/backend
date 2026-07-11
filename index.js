@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const user = require('./models/user');
 const post = require('./models/post');
-const multerconfig = require("./config/multerconfig")
+const upload = require("./config/multerconfig")
 const path = require("path")
 
 app.set("view engine", "ejs");
@@ -17,13 +17,9 @@ app.use(express.static(path.join(__dirname,"public")));
 app.use(cookieParser())
 
 
-// app.get("/test", (req, res)=>{
-//     res.render("test")
-// })
 
-// app.post('/upload', upload.single("image"),  (req,res)=>{
-//     console.log(req.file)
-// })
+
+
 
 // ------------------------------------------------
 app.get('/', (req, res) => {
@@ -33,6 +29,17 @@ app.get('/', (req, res) => {
 app.get('/login', (req, res) => {
     res.render("login");
 });
+
+app.get("/profile/upload", (req,res)=>{
+    res.render("profileupload");
+})
+
+app.post('/upload', isLoggedIn , upload.single("image"), async (req,res)=>{
+    let user = await userModel.findOne({email: req.user.email})
+    user.profilepic = req.file.filename;
+    await user.save();
+    res.redirect("/profile")
+})
 
 app.get('/profile', isLoggedIn,async (req, res) => {// ye ak protected route hai 
     let user = await userModel.findOne({email: req.user.email}).populate("posts") // we are chcking here kon sa user login hai usko find kar rahe hai 
