@@ -35,9 +35,7 @@
                         <small class="inline-block mt-2"><%= post.likes.length %> likes</small>  <!-- here i can find post ke likes array ka length  -->  
 
                         <div class="btns flex mt-1  gap-4">
-                            <a class="text-blue-500" href="/like/<%= post._id %>">
-                                <%= post.likes.indexOf(user._id) ? "Like" : "Unlike" %>
-                            </a>
+
                             <a class="text-zinc-500" href="/edit/<%= post._id%>">edit</a>
                         </div>
                     </div>
